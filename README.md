@@ -1,8 +1,6 @@
-!lab-06-tcp-chat-server [cf]('./assets/siegward.gif')
-======
-
-# Simple TCP chat server
+# Simple TCP chat server ![JVS](assets/siegward.gif)
 Run the chat server with node server.js
+Connect to the server with `telnet localhost 3000`
 
 ## Supported commands
 `\nick newnick`: change your nickname to newnick
