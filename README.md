@@ -1,4 +1,4 @@
-![cf]('./assets/siegward.gif') lab-06-tcp-chat-server
+!lab-06-tcp-chat-server [cf]('./assets/siegward.gif')
 ======
 
 # Simple TCP chat server
