@@ -4,61 +4,51 @@ const expect = require('chai').expect;
 
 const server = require('../_server');
 
-const port = 3000;
-
-describe('chat server', function() {
-  before(function(done) {
-    server.listen(port, done);
+describe('chat server', () => {
+  beforeEach(function(done) {
+    this.port = Math.floor(Math.random() * (8000 - 3000 + 1)) + 3000;
+    server.listen(this.port, done);
   });
 
-  after(function(done) {
+  afterEach(function(done) {
     server.close(done);
   });
 
-  it('should send some data between clients', function(done) {
-    let client1 = net.connect({port});
-    let client2 = net.connect({port});
+  it('Should send a welcome message to client', (done) => {
+    var client1 = net.connect(this.port);
+    client1.on('data', (data) => {
+      expect(data.toString().to.have.string('Welcome to the server!'));
+    });
+    client1.destroy();
+    done();
+  });
 
-    // var messages = ['something different'];
-    // var toSend = ['test message'];
+  it('It should broadcast to all users', function (done) {
+    const client1 = net.connect(this.port);
+    const client2 = net.connect(this.port);
+
+    const toSend = ['test message'];
 
     client2.on('data', (data) => {
-      if(data.toString().includes('SERVER:')) {
+      if(data.toString().includes('Welcome')) {
         expect(data.toString()).to.have.string('Welcome to the server!');
-        console.log('writing');
-        client1.write('something different');
-        // if (messages.length)
-        //   client1.write(messages.pop());
+      } else if(data.toString().includes('disconnected')){
+        expect(data.toString()).to.have.string('has disconnected from the server');
+      } else if(data.toString().includes('connected')) {
+        expect(data.toString()).to.have.string('has connected to server');
       }
-    });
-
-    client2.on('close', () => {
-      client1.end();
-      // done();
-    });
-
-    client1.on('data', (data) => {
-      if(data.toString().includes('SERVER:')) {
-        if(data.toString().includes('Welcome to the server!') || data.toString().includes('connected to server') || data.toString().includes('disconnected from the server')) {
-          let tf = true;
-          expect(tf).to.eql(true);
-          console.log('sadhlasjdhas');
-
-          // client2.end();
-          // done();
-        }
+      if (toSend.length) {
+        client1.write(toSend.pop());
       } else {
-        // console.log('sadhlasjdhas');
-
-        expect(data.toString()).to.have.string('something different');
-        client2.end();
-        // done();
+        client1.end();
       }
     });
 
-    client1.on('close', function() {
-      // client2.end();
+    client1.on('close', () => {
+      client2.end();
+      expect(toSend.length).to.eql(0);
       done();
     });
   });
+
 });
