@@ -1,4 +1,4 @@
-# Simple TCP chat server ![JVS](assets/siegward.gif)
+# Simple TCP chat server ![idle](./assets/siegward.gif)
 Run the chat server with node server.js
 
 Connect to the server with `telnet localhost 3000`
